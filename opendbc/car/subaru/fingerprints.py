@@ -269,6 +269,18 @@ FW_VERSIONS = {
       b'\xe8!cp\x07',
     ],
   },
+  CAR.SUBARU_WRX_2026: {
+    (Ecu.abs, 0x7b0, None): [
+      b'\xa4 &C\x00',
+    ],
+    (Ecu.fwdCamera, 0x787, None): [
+      b'%!\x08\x00N\x00\x00\x00\x00\x00',
+      b'%!\x08\x00N\x13!\x08\x02>',
+    ],
+    (Ecu.engine, 0x7a2, None): [
+      b'\x16,\xb00\x07',
+    ],
+  },
   CAR.SUBARU_FORESTER: {
     (Ecu.abs, 0x7b0, None): [
       b'\xa3 \x18\x14\x00',

@@ -56,9 +56,14 @@ class CarState(CarStateBase):
       ret.leftBlindspot = (cp.vl["BSD_RCTA"]["L_ADJACENT"] == 1) or (cp.vl["BSD_RCTA"]["L_APPROACHING"] == 1)
       ret.rightBlindspot = (cp.vl["BSD_RCTA"]["R_ADJACENT"] == 1) or (cp.vl["BSD_RCTA"]["R_APPROACHING"] == 1)
 
-    cp_transmission = cp_alt if self.CP.flags & SubaruFlags.HYBRID else cp
-    can_gear = int(cp_transmission.vl["Transmission"]["Gear"])
-    ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(can_gear, None))
+    if self.CP.flags & SubaruFlags.MANUAL:
+      # Manual cars don't send Transmission. Report drive and let EyeSight's cruise state gate engagement
+      # TODO: use the neutral, reverse, and handbrake switches
+      ret.gearShifter = structs.CarState.GearShifter.drive
+    else:
+      cp_transmission = cp_alt if self.CP.flags & SubaruFlags.HYBRID else cp
+      can_gear = int(cp_transmission.vl["Transmission"]["Gear"])
+      ret.gearShifter = self.parse_gear_shifter(self.shifter_values.get(can_gear, None))
 
     if not (self.CP.flags & SubaruFlags.LKAS_ANGLE):
       ret.steeringAngleDeg = cp.vl["Steering_Torque"]["Steering_Angle"]

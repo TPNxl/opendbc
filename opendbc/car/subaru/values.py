@@ -81,6 +81,8 @@ class SubaruFlags(IntFlag):
   PREGLOBAL = 16
   HYBRID = 32
   LKAS_ANGLE = 64
+  # Manual transmission: no Transmission (0x48) message, gear isn't reported
+  MANUAL = 256
 
 
 GLOBAL_ES_ADDR = 0x787
@@ -224,6 +226,11 @@ class CAR(Platforms):
     CarSpecs(mass=1529, wheelbase=2.67, steerRatio=13),
     flags=SubaruFlags.LKAS_ANGLE,
   )
+  SUBARU_WRX_2026 = SubaruGen2PlatformConfig(
+    [SubaruCarDocs("Subaru WRX tS 2026", "EyeSight Driver Assistance", car_parts=CarParts.common([CarHarness.subaru_d]))],
+    CarSpecs(mass=1560, wheelbase=2.675, steerRatio=13.5),
+    flags=SubaruFlags.LKAS_ANGLE | SubaruFlags.MANUAL,
+  )
 
 
 SUBARU_VERSION_REQUEST = bytes([uds.SERVICE_TYPE.READ_DATA_BY_IDENTIFIER]) + \
@@ -288,6 +295,8 @@ FW_QUERY_CONFIG = FwQueryConfig(
   # We don't get the EPS from non-OBD queries on GEN2 cars. Note that we still attempt to match when it exists
   non_essential_ecus={
     Ecu.eps: [c for c in CAR if c.config.flags & SubaruFlags.GLOBAL_GEN2],
+    # The WRX engine ECU doesn't always respond on the bus 1 query
+    Ecu.engine: [CAR.SUBARU_WRX_2026],
   }
 )
 
